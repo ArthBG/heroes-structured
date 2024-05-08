@@ -51,7 +51,7 @@ const battle = async (villain1_id, villain2_id) => {
 
 }
 
-async function getBattleWinner (req, res) {
+async function BattleWinner (req, res) {
     const { villain1_id, villain2_id } = req.body;
     const winner_id = await battle(villain1_id, villain2_id);
     const loser_id = winner_id === villain1_id ? villain2_id : villain1_id;
@@ -87,7 +87,7 @@ async function getBattleWinner (req, res) {
 };
 
 
-async function getBattleById (req, res) {
+async function getBattles (req, res) {
     try {
         const result = await pool.query(
             `SELECT battles.id, battles.villain1_id, battles.villain2_id, battles.winner_id, battles.loser_id, villains.name AS winner, villains2.name AS loser,villains.level AS winner_level, villains2.level AS loser_level, villains.damage AS winner_damage, villains2.damage AS loser_damage, villains.hp AS winner_hp, villains2.hp AS loser_hp FROM battles INNER JOIN villains ON battles.winner_id = villains.id INNER JOIN villains AS villains2 ON battles.loser_id = villains2.id`
@@ -119,4 +119,4 @@ async function deleteBattle (req, res) {
     }
 };
 
-module.exports = { getBattleWinner, getBattleById, deleteBattle };
+module.exports = { BattleWinner, getBattles, deleteBattle };
