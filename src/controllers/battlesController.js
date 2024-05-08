@@ -102,6 +102,23 @@ async function getBattles (req, res) {
     }
 };
 
+ async function getBattlesByVillainName(req, res) {
+    try {
+        const { name } = req.params;
+        const result = await pool.query(
+            `SELECT battles.id, battles.villain1_id, battles.villain2_id, battles.winner_id, battles.loser_id, villains.name AS winner, villains2.name AS loser,villains.level AS winner_level, villains2.level AS loser_level, villains.damage AS winner_damage, villains2.damage AS loser_damage, villains.hp AS winner_hp, villains2.hp AS loser_hp FROM battles INNER JOIN villains ON battles.winner_id = villains.id INNER JOIN villains AS villains2 ON battles.loser_id = villains2.id WHERE villains.name = $1 OR villains2.name = $1`, [name]
+        );
+        if (result.rowCount === 0) {
+            res.status(404).json({ error: 'Battle not found' });
+        } else {
+            res.status(200).json(result.rows[0]);
+        }
+    } catch (error) {
+        console.error("Cannot get this battle", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 async function deleteBattle (req, res) {
     const { id } = req.params;
     const query = 'DELETE FROM battles WHERE id = $1';
@@ -119,4 +136,4 @@ async function deleteBattle (req, res) {
     }
 };
 
-module.exports = { BattleWinner, getBattles, deleteBattle };
+module.exports = { BattleWinner, getBattles, getBattlesByVillainName, deleteBattle };
